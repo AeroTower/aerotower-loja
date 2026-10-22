@@ -10,6 +10,7 @@ name: Publicar no GitHub Pages
 # app_links.dart). Para trocar sem mexer no codigo, defina em Settings >
 # Secrets and variables > Actions > Variables:
 #   FORM_URL   link do Google Forms
+#   PAINEL_URL endereco do painel (botao Entrar), se mudar de novo
 #   VIDEO_URL  link do video no YouTube
 # Variavel vazia e ignorada: vale o padrao do codigo.
 
@@ -48,11 +49,20 @@ jobs:
         env:
           FORM_URL: ${{ vars.FORM_URL }}
           VIDEO_URL: ${{ vars.VIDEO_URL }}
+          PAINEL_URL: ${{ vars.PAINEL_URL }}
+        # So passa --dart-define da variavel que existe. Passar vazia
+        # (--dart-define=FORM_URL="") DEFINE o valor como texto vazio e o
+        # padrao do codigo e ignorado: era assim que o formulario e o video
+        # sumiam quando a variavel nao estava configurada (por exemplo, num
+        # repositorio recem-transferido).
         run: |
+          EXTRA=()
+          [ -n "$FORM_URL" ]   && EXTRA+=(--dart-define=FORM_URL="$FORM_URL")
+          [ -n "$VIDEO_URL" ]  && EXTRA+=(--dart-define=VIDEO_URL="$VIDEO_URL")
+          [ -n "$PAINEL_URL" ] && EXTRA+=(--dart-define=PAINEL_URL="$PAINEL_URL")
           flutter build web --release \
             --base-href "/${{ github.event.repository.name }}/" \
-            --dart-define=FORM_URL="$FORM_URL" \
-            --dart-define=VIDEO_URL="$VIDEO_URL"
+            "${EXTRA[@]}"
 
       # O Pages nao tem fallback de SPA: servir o index como 404.html faz
       # os links diretos (/loja, /produto/modular) abrirem a pagina certa.
