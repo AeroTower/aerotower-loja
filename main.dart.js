@@ -30210,7 +30210,7 @@ $S:2}
 A.azv.prototype={
 $1(a){var s=A.d0().b
 s=s==null?null:s.canvasKitBaseUrl
-return(s==null?"https://www.gstatic.com/flutter-canvaskit/692136cb6582dbfc5af3fb33c2515a069f2f66d0/":s)+a},
+return(s==null?"https://www.gstatic.com/flutter-canvaskit/deb287481e3ce9468f3434937ced4240a70539ca/":s)+a},
 $S:89}
 A.OH.prototype={
 gp(a){var s=this.a
@@ -46907,7 +46907,7 @@ a7f(a){var s=0,r=A.N(t.H),q
 var $async$xj=A.O(function(b,c){if(b===1)return A.K(c,r)
 for(;;)switch(s){case 0:A.f1(a,!1,t.i3).awg("cta_entrar_painel")
 s=2
-return A.J(A.a2e(A.SB().aa("https://ribeirocaio11.github.io/projeto_aeroponia/"),"_blank"),$async$xj)
+return A.J(A.a2e(A.SB().aa("https://app.aerotower.com.br/"),"_blank"),$async$xj)
 case 2:if(!c&&a.e!=null){q=a.au(t.Pu).f
 q.JK()
 q.MN(A.aDC(null,null,null,B.dK,B.j2,B.a5,null,A.aA("N\xe3o foi poss\xedvel abrir o painel.",null,null,null,A.bB(14,B.bp,1.55,null,B.j),null,null),null,B.Jp,null,null,null,null,null,null,null,null,null,320))}return A.L(null,r)}})
