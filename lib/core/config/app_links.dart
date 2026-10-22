@@ -36,12 +36,11 @@ class AppLinks {
   /// Estava vazio, e com ele vazio o botão "Entrar" não ia a lugar nenhum
   /// — só mostrava "o painel ainda não está publicado". Ele está.
   ///
-  /// Com os repositórios na organização "aerotower", o painel saiu de
-  /// ribeirocaio11.github.io/projeto_aeroponia (o GitHub Pages não
-  /// redireciona endereço antigo).
+  /// O painel tem domínio próprio desde que o projeto foi para a
+  /// organização AeroTower (antes: ribeirocaio11.github.io/projeto_aeroponia).
   static const String painel = String.fromEnvironment(
     'PAINEL_URL',
-    defaultValue: 'https://aerotower.github.io/aerotower-app/',
+    defaultValue: 'https://app.aerotower.com.br/',
   );
 
   static bool get painelPublicado => painel.isNotEmpty;

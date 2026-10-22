@@ -2,9 +2,9 @@ name: Publicar no GitHub Pages
 
 # Publica a loja no GitHub Pages a cada push na main.
 #
-# O base-href sai do nome do repositorio, entao renomear o repo nao quebra
-# o site — e um erro chato de achar, porque a pagina abre em branco sem
-# nenhuma mensagem.
+# A loja e servida em https://aerotower.com.br (dominio proprio no GitHub
+# Pages), entao o site fica na raiz: base-href "/". Sem dominio proprio o
+# certo seria "/<nome-do-repositorio>/"; errar isso deixa a pagina em branco.
 #
 # O link do formulario e do video ja vem no codigo (lib/core/config/
 # app_links.dart). Para trocar sem mexer no codigo, defina em Settings >
@@ -61,7 +61,7 @@ jobs:
           [ -n "$VIDEO_URL" ]  && EXTRA+=(--dart-define=VIDEO_URL="$VIDEO_URL")
           [ -n "$PAINEL_URL" ] && EXTRA+=(--dart-define=PAINEL_URL="$PAINEL_URL")
           flutter build web --release \
-            --base-href "/${{ github.event.repository.name }}/" \
+            --base-href "/" \
             "${EXTRA[@]}"
 
       # O Pages nao tem fallback de SPA: servir o index como 404.html faz
@@ -78,3 +78,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          # Dominio proprio: o CNAME vai junto em todo deploy; sem ele, cada
+          # publicacao apagaria o dominio configurado no Pages.
+          cname: aerotower.com.br
