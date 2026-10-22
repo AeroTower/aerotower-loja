@@ -2,20 +2,23 @@ name: Publicar no GitHub Pages
 
 # Publica a loja no GitHub Pages a cada push na main.
 #
-# O base-href sai do nome do repositorio, entao renomear o repo nao quebra
-# o site — e um erro chato de achar, porque a pagina abre em branco sem
-# nenhuma mensagem.
+# A loja e servida em https://aerotower.com.br (dominio proprio no GitHub
+# Pages), entao o site fica na raiz: base-href "/". Sem dominio proprio o
+# certo seria "/<nome-do-repositorio>/"; errar isso deixa a pagina em branco.
 #
 # O link do formulario e do video ja vem no codigo (lib/core/config/
 # app_links.dart). Para trocar sem mexer no codigo, defina em Settings >
 # Secrets and variables > Actions > Variables:
 #   FORM_URL   link do Google Forms
+#   PAINEL_URL endereco do painel (botao Entrar), se mudar de novo
 #   VIDEO_URL  link do video no YouTube
 # Variavel vazia e ignorada: vale o padrao do codigo.
 
 on:
   push:
     branches: [main]
+  # Em pull request so confere (analyze, testes, build); nao publica.
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -48,11 +51,20 @@ jobs:
         env:
           FORM_URL: ${{ vars.FORM_URL }}
           VIDEO_URL: ${{ vars.VIDEO_URL }}
+          PAINEL_URL: ${{ vars.PAINEL_URL }}
+        # So passa --dart-define da variavel que existe. Passar vazia
+        # (--dart-define=FORM_URL="") DEFINE o valor como texto vazio e o
+        # padrao do codigo e ignorado: era assim que o formulario e o video
+        # sumiam quando a variavel nao estava configurada (por exemplo, num
+        # repositorio recem-transferido).
         run: |
+          EXTRA=()
+          [ -n "$FORM_URL" ]   && EXTRA+=(--dart-define=FORM_URL="$FORM_URL")
+          [ -n "$VIDEO_URL" ]  && EXTRA+=(--dart-define=VIDEO_URL="$VIDEO_URL")
+          [ -n "$PAINEL_URL" ] && EXTRA+=(--dart-define=PAINEL_URL="$PAINEL_URL")
           flutter build web --release \
-            --base-href "/${{ github.event.repository.name }}/" \
-            --dart-define=FORM_URL="$FORM_URL" \
-            --dart-define=VIDEO_URL="$VIDEO_URL"
+            --base-href "/" \
+            "${EXTRA[@]}"
 
       # O Pages nao tem fallback de SPA: servir o index como 404.html faz
       # os links diretos (/loja, /produto/modular) abrirem a pagina certa.
@@ -64,7 +76,11 @@ jobs:
         run: touch build/web/.nojekyll
 
       - name: Deploy
+        if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          # Dominio proprio: o CNAME vai junto em todo deploy; sem ele, cada
+          # publicacao apagaria o dominio configurado no Pages.
+          cname: aerotower.com.br

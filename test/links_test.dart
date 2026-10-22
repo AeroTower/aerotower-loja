@@ -26,7 +26,7 @@ void main() {
     test('resolve() devolve o endereço absoluto intacto', () {
       // O botão passa o valor por Uri.base.resolve(). Com endereço
       // absoluto isso tem de ser identidade, senão o destino muda.
-      final base = Uri.parse('https://fernaopbleme.github.io/loja-aerotower/');
+      final base = Uri.parse('https://aerotower.com.br/');
       expect(base.resolve(AppLinks.painel).toString(), AppLinks.painel);
     });
 
