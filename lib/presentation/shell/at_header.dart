@@ -28,23 +28,39 @@ class AtHeader extends StatelessWidget {
             decoration: BoxDecoration(boxShadow: AtShadows.sm),
             child: Container(
               color: AtColors.bg,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              padding: EdgeInsets.symmetric(
+                horizontal: estreito ? 16 : 24,
+                vertical: estreito ? 10 : 14,
+              ),
               child: Center(
                 child: ConstrainedBox(
                   constraints:
                       const BoxConstraints(maxWidth: AtSpacing.maxWidth),
-                  child: Row(
-                    children: [
-                      const _Marca(),
-                      const SizedBox(width: 20),
-                      if (!estreito) ...[
-                        const Expanded(child: _CampoBusca()),
-                        const SizedBox(width: 20),
-                      ] else
-                        const Spacer(),
-                      const _NavDireita(),
-                    ],
-                  ),
+                  // Abaixo de 900 px não cabem busca, links e botões na mesma
+                  // linha: eles vão para o menu, e o carrinho fica à vista.
+                  child: estreito
+                      ? const Row(
+                          children: [
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: _Marca(),
+                              ),
+                            ),
+                            _CarrinhoCompacto(),
+                            SizedBox(width: 8),
+                            _BotaoMenu(),
+                          ],
+                        )
+                      : const Row(
+                          children: [
+                            _Marca(),
+                            SizedBox(width: 20),
+                            Expanded(child: _CampoBusca()),
+                            SizedBox(width: 20),
+                            _NavDireita(),
+                          ],
+                        ),
                 ),
               ),
             ),
@@ -105,7 +121,10 @@ class _Marca extends StatelessWidget {
 /// Filtra a grade da loja a cada tecla. Digitar fora de /loja leva
 /// para lá, senão o resultado da busca ficaria invisível.
 class _CampoBusca extends StatefulWidget {
-  const _CampoBusca();
+  /// Chamado ao apertar Enter. O menu usa para fechar e mostrar o resultado.
+  final VoidCallback? aoEnviar;
+
+  const _CampoBusca({this.aoEnviar});
 
   @override
   State<_CampoBusca> createState() => _CampoBuscaState();
@@ -147,6 +166,7 @@ class _CampoBuscaState extends State<_CampoBusca> {
               child: TextField(
                 controller: _controller,
                 onChanged: _aoDigitar,
+                onSubmitted: (_) => widget.aoEnviar?.call(),
                 style: AtText.body(14),
                 decoration: InputDecoration(
                   isDense: true,
@@ -169,21 +189,18 @@ class _NavDireita extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final estreito = MediaQuery.sizeOf(context).width < 900;
     final quantidade =
         context.select<CarrinhoStore, int>((c) => c.quantidadeTotal);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!estreito) ...[
-          _Link('Início', () => context.go(Rotas.inicio)),
-          const SizedBox(width: 16),
-          _Link('Loja', () => context.go(Rotas.loja)),
-          const SizedBox(width: 16),
-          _Link('Faça você mesmo', () => context.go(Rotas.diy)),
-          const SizedBox(width: 16),
-        ],
+        _Link('Início', () => context.go(Rotas.inicio)),
+        const SizedBox(width: 16),
+        _Link('Loja', () => context.go(Rotas.loja)),
+        const SizedBox(width: 16),
+        _Link('Faça você mesmo', () => context.go(Rotas.diy)),
+        const SizedBox(width: 16),
         const _BotaoEntrar(),
         const SizedBox(width: 10),
         AtButton(
@@ -212,11 +229,154 @@ class _NavDireita extends StatelessWidget {
   }
 }
 
+/// Carrinho do celular: só o ícone e a quantidade, para caber ao lado da marca.
+class _CarrinhoCompacto extends StatelessWidget {
+  const _CarrinhoCompacto();
+
+  @override
+  Widget build(BuildContext context) {
+    final quantidade =
+        context.select<CarrinhoStore, int>((c) => c.quantidadeTotal);
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _BotaoRedondo(
+          dica: 'Carrinho',
+          icone: AtIcons.cart,
+          aoTocar: () => context.go(Rotas.carrinho),
+        ),
+        if (quantidade > 0)
+          Positioned(
+            top: -2,
+            right: -2,
+            // Deixa o toque passar para o botão embaixo da quantidade.
+            child: IgnorePointer(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18),
+                height: 18,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: AtColors.accent700,
+                  borderRadius: BorderRadius.circular(AtRadius.pill),
+                ),
+                child: Center(
+                  child: Text(
+                    '$quantidade',
+                    style: AtText.body(11, color: AtColors.bg, height: 1.2),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _BotaoMenu extends StatelessWidget {
+  const _BotaoMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BotaoRedondo(
+      dica: 'Abrir menu',
+      icone: AtIcons.menu,
+      aoTocar: () => Scaffold.of(context).openEndDrawer(),
+    );
+  }
+}
+
+/// Botão só com ícone. Tem 44 px, área de toque confortável no celular.
+class _BotaoRedondo extends StatelessWidget {
+  final String dica;
+  final String icone;
+  final VoidCallback aoTocar;
+
+  const _BotaoRedondo({
+    required this.dica,
+    required this.icone,
+    required this.aoTocar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: dica,
+      onPressed: aoTocar,
+      constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+      padding: EdgeInsets.zero,
+      style: IconButton.styleFrom(
+        side: const BorderSide(color: AtColors.divider),
+      ),
+      icon: AtIcon(icone, size: 19, color: AtColors.text),
+    );
+  }
+}
+
+/// O que no computador fica no topo: busca, links e o botão Entrar.
+class AtMenuCelular extends StatelessWidget {
+  const AtMenuCelular({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Fecha o painel e depois navega, para a página nova já aparecer limpa.
+    void irPara(String rota) {
+      Scaffold.of(context).closeEndDrawer();
+      context.go(rota);
+    }
+
+    return Drawer(
+      backgroundColor: AtColors.bg,
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            const _Marca(),
+            const SizedBox(height: 20),
+            _CampoBusca(aoEnviar: () => Scaffold.of(context).closeEndDrawer()),
+            const SizedBox(height: 12),
+            _ItemMenu('Início', () => irPara(Rotas.inicio)),
+            _ItemMenu('Loja', () => irPara(Rotas.loja)),
+            _ItemMenu('Faça você mesmo', () => irPara(Rotas.diy)),
+            const SizedBox(height: 12),
+            const Divider(color: AtColors.divider),
+            const SizedBox(height: 12),
+            const _BotaoEntrar(block: true),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ItemMenu extends StatelessWidget {
+  final String label;
+  final VoidCallback aoTocar;
+
+  const _ItemMenu(this.label, this.aoTocar);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: aoTocar,
+      borderRadius: BorderRadius.circular(AtRadius.pill),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Text(label, style: AtText.heading(20)),
+      ),
+    );
+  }
+}
+
 /// Leva da loja para o painel de monitoramento (sensores, dashboard, IA),
 /// que é outra aplicação, em outro endereço. Abre em nova aba para não
 /// derrubar o carrinho, que só existe em memória.
 class _BotaoEntrar extends StatelessWidget {
-  const _BotaoEntrar();
+  /// Ocupa a largura toda, como no menu do celular.
+  final bool block;
+
+  const _BotaoEntrar({this.block = false});
 
   Future<void> _abrirPainel(BuildContext context) async {
     context.read<AnalyticsService>().registrar(Eventos.entrarPainel);
@@ -268,6 +428,7 @@ class _BotaoEntrar extends StatelessWidget {
     return AtButton(
       'Entrar',
       variant: AtButtonVariant.ghost,
+      block: block,
       onPressed: () => _abrirPainel(context),
       leading: const AtIcon(AtIcons.login, size: 16, color: AtColors.accent700),
     );

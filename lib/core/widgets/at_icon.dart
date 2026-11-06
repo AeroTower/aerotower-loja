@@ -24,6 +24,8 @@ class AtIcons {
 
   static const check = 'M20 6 9 17l-5-5';
 
+  static const menu = 'M4 6h16 M4 12h16 M4 18h16';
+
   static const login =
       'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4 M10 17l5-5-5-5 M15 12H3';
 

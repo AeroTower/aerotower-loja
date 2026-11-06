@@ -35,21 +35,27 @@ class _AtShellState extends State<AtShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const AtHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scroll,
-              child: Column(
-                children: [
-                  widget.child,
-                  const AtFooter(),
-                ],
+      // Painel lateral do celular, aberto pelo botão de menu do header.
+      endDrawer: const AtMenuCelular(),
+      // SafeArea: no celular, o header não fica embaixo do notch.
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const AtHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scroll,
+                child: Column(
+                  children: [
+                    widget.child,
+                    const AtFooter(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
