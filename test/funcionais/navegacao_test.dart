@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:aerotower_site/core/router/app_router.dart';
+import 'package:aerotower_site/main.dart' as site;
 import 'package:aerotower_site/presentation/pages/diy_page.dart';
 import 'package:aerotower_site/presentation/pages/em_breve_page.dart';
 import 'package:aerotower_site/presentation/pages/inicio_page.dart';
@@ -134,6 +136,13 @@ void main() {
   testWidgets('a marca volta ao início', (tester) async {
     await abrirSite(tester, rota: '/loja');
     await tocar(tester, find.text('AeroTower').first);
+    expect(find.byType(InicioPage), findsOneWidget);
+  });
+
+  testWidgets('main() sobe o site na página inicial', (tester) async {
+    appRouter.go('/');
+    site.main();
+    await esperar(tester);
     expect(find.byType(InicioPage), findsOneWidget);
   });
 }
