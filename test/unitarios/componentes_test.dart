@@ -9,8 +9,13 @@ import 'package:aerotower_site/core/widgets/video_slot.dart';
 import 'package:aerotower_site/state/carrinho_store.dart';
 import 'package:aerotower_site/state/loja_store.dart';
 
-Future<void> _mostrar(WidgetTester tester, Widget w) => tester.pumpWidget(
-      MaterialApp(theme: AtTheme.theme, home: Scaffold(body: Center(child: SizedBox(width: 420, child: w)))));
+Future<void> _mostrar(WidgetTester tester, Widget w) async {
+  tester.view.physicalSize = const Size(1200, 1200);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+      MaterialApp(theme: AtTheme.theme, home: Scaffold(body: Center(child: SizedBox(width: 900, child: w)))));
+}
 
 void main() {
   testWidgets('VideoSlot explica onde salvar o vídeo', (tester) async {

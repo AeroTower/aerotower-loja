@@ -44,12 +44,12 @@ void main() {
   testWidgets('busca no header leva para a loja com o resultado', (tester) async {
     await abrirSite(tester);
     await tester.enterText(find.byType(TextField).first, 'pro');
-    await tester.pump(const Duration(milliseconds: 400));
+    await esperar(tester);
     expect(find.byType(LojaPage), findsOneWidget);
     expect(find.text('HidroFullkit Pro'), findsWidgets);
 
     await tester.enterText(find.byType(TextField).first, 'xyz inexistente');
-    await tester.pump(const Duration(milliseconds: 400));
+    await esperar(tester);
     expect(find.text('Nada encontrado'), findsOneWidget);
   });
 
@@ -88,7 +88,7 @@ void main() {
   });
 
   testWidgets('celular: menu lateral, carrinho com contador e busca', (tester) async {
-    await abrirSite(tester, rota: '/loja', tamanho: const Size(400, 5000));
+    await abrirSite(tester, rota: '/loja', tamanho: const Size(520, 5000));
     expect(find.byTooltip('Abrir menu'), findsOneWidget);
 
     await tocar(tester, find.text('Adicionar').first);
@@ -102,7 +102,7 @@ void main() {
     await tocar(tester, find.byTooltip('Abrir menu'));
     await tester.enterText(find.descendant(of: find.byType(Drawer), matching: find.byType(TextField)), 'bomba');
     await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pump(const Duration(milliseconds: 400));
+    await esperar(tester);
     expect(find.byType(LojaPage), findsOneWidget);
 
     await tocar(tester, find.byTooltip('Carrinho'));

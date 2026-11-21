@@ -27,7 +27,7 @@ void main() {
         'Então vejo os add-ons e não os kits', (tester) async {
       await abrirSite(tester);
       await tester.enterText(find.byType(TextField).first, 'bomba');
-      await tester.pump(const Duration(milliseconds: 400));
+      await esperar(tester);
       expect(find.byType(LojaPage), findsOneWidget);
       expect(find.text('Kit Add-ons'), findsWidgets);
       expect(find.text('HidroFullkit Pro'), findsNothing);

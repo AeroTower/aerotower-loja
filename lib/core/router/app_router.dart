@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/pages/diy_page.dart';
@@ -7,6 +8,15 @@ import '../../presentation/pages/inicio_page.dart';
 import '../../presentation/pages/loja_page.dart';
 import '../../presentation/shell/at_shell.dart';
 import 'rotas.dart';
+
+/// Troca de página sem animação.
+///
+/// O conteúdo fica dentro da rolagem do AtShell. Durante a animação padrão,
+/// a página nova era desenhada com a altura da antiga: estourava (aviso de
+/// layout) ou aparecia cortada até a animação acabar. Site não anima troca
+/// de página; os testes de navegação pegaram isso.
+Page<void> _pagina(GoRouterState state, Widget child) =>
+    NoTransitionPage<void>(key: state.pageKey, child: child);
 
 /// As oito rotas do handoff. Início, loja e os guias estão construídos;
 /// as demais
@@ -18,41 +28,45 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: Rotas.inicio,
-          builder: (context, state) => const InicioPage(),
+          pageBuilder: (context, state) => _pagina(state, const InicioPage()),
         ),
         GoRoute(
           path: Rotas.diy,
-          builder: (context, state) => const DiyPage(),
+          pageBuilder: (context, state) => _pagina(state, const DiyPage()),
         ),
         GoRoute(
           path: Rotas.guia,
-          builder: (context, state) => GuiaPage(
-            slug: state.pathParameters['slug'] ?? '',
+          pageBuilder: (context, state) => _pagina(
+            state,
+            GuiaPage(slug: state.pathParameters['slug'] ?? ''),
           ),
         ),
         GoRoute(
           path: Rotas.loja,
-          builder: (context, state) => const LojaPage(),
+          pageBuilder: (context, state) => _pagina(state, const LojaPage()),
         ),
         GoRoute(
           path: Rotas.produto,
-          builder: (context, state) => EmBrevePage(
-            titulo: 'Produto: ${state.pathParameters['id'] ?? ''}',
+          pageBuilder: (context, state) => _pagina(
+            state,
+            EmBrevePage(titulo: 'Produto: ${state.pathParameters['id'] ?? ''}'),
           ),
         ),
         GoRoute(
           path: Rotas.carrinho,
-          builder: (context, state) => const EmBrevePage(titulo: 'Carrinho'),
+          pageBuilder: (context, state) =>
+              _pagina(state, const EmBrevePage(titulo: 'Carrinho')),
         ),
         GoRoute(
           path: Rotas.checkout,
-          builder: (context, state) =>
-              const EmBrevePage(titulo: 'Finalizar compra'),
+          pageBuilder: (context, state) =>
+              _pagina(state, const EmBrevePage(titulo: 'Finalizar compra')),
         ),
         GoRoute(
           path: Rotas.pedido,
-          builder: (context, state) => EmBrevePage(
-            titulo: 'Pedido ${state.pathParameters['id'] ?? ''}',
+          pageBuilder: (context, state) => _pagina(
+            state,
+            EmBrevePage(titulo: 'Pedido ${state.pathParameters['id'] ?? ''}'),
           ),
         ),
       ],
