@@ -8,6 +8,7 @@ import 'package:aerotower_site/presentation/pages/diy_page.dart';
 import 'package:aerotower_site/presentation/pages/em_breve_page.dart';
 import 'package:aerotower_site/presentation/pages/inicio_page.dart';
 import 'package:aerotower_site/presentation/pages/loja_page.dart';
+import 'package:aerotower_site/presentation/shell/at_shell.dart';
 
 import '../apoio.dart';
 
@@ -30,6 +31,21 @@ void main() {
     expect(find.byType(EmBrevePage), findsOneWidget);
     await tocar(tester, find.text('Voltar ao início'));
     expect(find.byType(InicioPage), findsOneWidget);
+  });
+
+  testWidgets('trocar de página volta ao topo da rolagem', (tester) async {
+    // Antes o AtShell comparava o tipo do child (sempre o Navigator) e a
+    // página nova abria no meio, na altura em que a anterior estava.
+    await abrirSite(tester, tamanho: const Size(1400, 900));
+    ScrollController rolagem() =>
+        tester.widget<SingleChildScrollView>(find.byKey(AtShell.chaveRolagem)).controller!;
+    rolagem().jumpTo(600);
+    await tester.pump();
+    expect(rolagem().offset, 600);
+
+    await tocar(tester, find.text('Loja').first);
+    expect(find.byType(LojaPage), findsOneWidget);
+    expect(rolagem().offset, 0);
   });
 
   testWidgets('categorias do header filtram a loja', (tester) async {
