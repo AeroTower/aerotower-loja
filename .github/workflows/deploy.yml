@@ -41,8 +41,11 @@ jobs:
       - name: Dependencias
         run: flutter pub get
 
+      # So erro e aviso derrubam o build; "info" nao. O Flutter 3.47 passou a
+      # marcar package:flutter/material.dart como obsoleto (info) e isso
+      # quebrava todo deploy. Igual ao workflow do app.
       - name: Analise
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Testes
         run: flutter test
