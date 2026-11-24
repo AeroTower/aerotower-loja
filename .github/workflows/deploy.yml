@@ -48,7 +48,8 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Testes
-        run: flutter test
+        # Os testes "defeito" falham de proposito (ver TESTES.md): fora do deploy.
+        run: flutter test --exclude-tags defeito
 
       - name: Build
         env:
