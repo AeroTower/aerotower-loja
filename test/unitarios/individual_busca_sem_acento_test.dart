@@ -2,11 +2,11 @@
 //
 // Unidade testada: LojaStore.produtosFiltrados (filtro da busca da loja),
 // sozinha, sem tela e sem rede.
-// Quem procura no celular quase nunca digita acento. Hoje a busca só ignora
+// Quem procura no celular quase nunca digita acento. Antes da correção (24/11/2026), a busca só ignorava
 // maiúsculas: "nivel de agua" não acha o HidroFullkit, cujo texto diz
 // "nível de água", e a pessoa vê "0 produtos".
-// Falha de propósito enquanto o defeito existir.
-@Tags(['defeito'])
+// Corrigido na refatoração (normalizarBusca): saiu da tag "defeito" e roda
+// na suíte normal, protegendo contra a volta do defeito.
 library;
 
 import 'package:aerotower_site/state/loja_store.dart';
