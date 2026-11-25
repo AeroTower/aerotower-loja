@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:aerotower_site/content/produtos.dart';
-import 'package:aerotower_site/core/theme/at_shadows.dart';
 import 'package:aerotower_site/core/theme/at_theme.dart';
 import 'package:aerotower_site/core/widgets/at_foto.dart';
 import 'package:aerotower_site/core/widgets/at_radio.dart';

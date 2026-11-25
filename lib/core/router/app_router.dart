@@ -24,7 +24,8 @@ Page<void> _pagina(GoRouterState state, Widget child) =>
 final appRouter = GoRouter(
   routes: [
     ShellRoute(
-      builder: (context, state, child) => AtShell(child: child),
+      builder: (context, state, child) =>
+          AtShell(rota: state.uri.path, child: child),
       routes: [
         GoRoute(
           path: Rotas.inicio,

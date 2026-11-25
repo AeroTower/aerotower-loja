@@ -77,12 +77,12 @@ class LojaStore extends ChangeNotifier {
 
   /// Categoria + busca (nome e resumo, sem diferenciar maiúsculas).
   List<Produto> get produtosFiltrados {
-    final termo = _busca.trim().toLowerCase();
+    final termo = normalizarBusca(_busca.trim());
 
     return produtos.where((p) {
       final naCategoria = _categoria == 'Todos' || p.categoria == _categoria;
       final naBusca = termo.isEmpty ||
-          '${p.nome} ${p.resumo}'.toLowerCase().contains(termo);
+          normalizarBusca('${p.nome} ${p.resumo}').contains(termo);
       return naCategoria && naBusca;
     }).toList();
   }
@@ -95,3 +95,20 @@ class LojaStore extends ChangeNotifier {
     return '$n ${n == 1 ? 'produto' : 'produtos'}';
   }
 }
+
+const _semAcento = {
+  'á': 'a', 'à': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a',
+  'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+  'í': 'i', 'ì': 'i', 'î': 'i', 'ï': 'i',
+  'ó': 'o', 'ò': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
+  'ú': 'u', 'ù': 'u', 'û': 'u', 'ü': 'u',
+  'ç': 'c', 'ñ': 'n',
+};
+
+/// Minúsculas e sem acento: quem busca no celular quase nunca digita acento
+/// ("nivel de agua" precisa achar "nível de água"). CT-UNIT-03.
+String normalizarBusca(String texto) => texto
+    .toLowerCase()
+    .split('')
+    .map((letra) => _semAcento[letra] ?? letra)
+    .join();
